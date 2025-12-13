@@ -24,14 +24,10 @@ A Flutter recipe application with Firebase integration for favorites, authentica
    - Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com/)
    - Enable Authentication, Firestore, and Cloud Messaging
    - Copy `.env.example` to `.env` and fill in your Firebase credentials
-   - Download `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
+   - Copy `.firebase_config.example.js` to `firebase_config.js` and fill in your Firebase credentials
 
-4. **Generate web config**
-```bash
-   dart run tool/generate_service_worker.dart
-```
 
-5. **Run the app**
+4. **Run the app**
 ```bash
-   flutter run -d chrome
+   flutter run -d chromes
 ```

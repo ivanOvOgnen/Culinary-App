@@ -1,16 +1,37 @@
-# recipe_application
+# Culinary App
 
-A new Flutter project.
+A Flutter recipe application with Firebase integration for favorites, authentication, and notifications.
 
-## Getting Started
+### Prerequisites
+- Flutter SDK
+- Firebase account
+- Git
 
-This project is a starting point for a Flutter application.
+### Setup
 
-A few resources to get you started if this is your first Flutter project:
+1. **Clone the repository**
+```bash
+   git clone https://github.com/ivanOvOgnen/Culinary-App.git
+   cd Culinary-App
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+2. **Install dependencies**
+```bash
+   flutter pub get
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+3. **Configure Firebase**
+   - Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com/)
+   - Enable Authentication, Firestore, and Cloud Messaging
+   - Copy `.env.example` to `.env` and fill in your Firebase credentials
+   - Download `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
+
+4. **Generate web config**
+```bash
+   dart run tool/generate_service_worker.dart
+```
+
+5. **Run the app**
+```bash
+   flutter run -d chrome
+```

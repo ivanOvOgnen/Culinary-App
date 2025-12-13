@@ -8,13 +8,13 @@ class CustomSearchBar extends StatelessWidget {
   final bool showClearButton;
 
   const CustomSearchBar({
-    Key? key,
+    super.key,
     required this.controller,
     required this.hintText,
     required this.onChanged,
     this.onClear,
     this.showClearButton = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

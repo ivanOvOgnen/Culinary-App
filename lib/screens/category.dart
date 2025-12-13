@@ -9,9 +9,9 @@ class CategoryScreen extends StatefulWidget {
   final String category;
 
   const CategoryScreen({
-    Key? key,
+    super.key,
     required this.category,
-  }) : super(key: key);
+  });
 
   @override
   State<CategoryScreen> createState() => _CategoryScreenState();

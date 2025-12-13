@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:recipe_application/screens/sign-in.dart';
 import '../models/category.dart';
 import '../services/api_service.dart';
+import '../services/auth.dart';
+import '../screens/favorites.dart';
 import '../widgets/category.dart';
 import '../widgets/search_bar.dart';
 import 'category.dart';
 import 'details.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -134,6 +137,31 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.casino),
             tooltip: 'Random Recipe',
             onPressed: _showRandomRecipe,
+          ),
+          IconButton(
+            icon: const Icon(Icons.favorite),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const FavoritesScreen(),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await AuthService().signOut();
+              if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SignInScreen(),
+                  ),
+                );
+              }
+            },
           ),
         ],
       ),

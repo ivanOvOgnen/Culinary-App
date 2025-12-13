@@ -1,21 +1,101 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/meal_summary.dart';
+import '../services/firebase.dart';
 
-class MealGridItem extends StatelessWidget {
+class MealGridItem extends StatefulWidget {
   final MealSummary meal;
   final VoidCallback onTap;
 
   const MealGridItem({
-    Key? key,
+    super.key,
     required this.meal,
     required this.onTap,
-  }) : super(key: key);
+  });
+
+  @override
+  State<MealGridItem> createState() => _MealGridItemState();
+}
+
+class _MealGridItemState extends State<MealGridItem> {
+  final FirebaseService _firebaseService = FirebaseService();
+  bool _isFavorite = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkFavoriteStatus();
+  }
+
+  Future<void> _checkFavoriteStatus() async {
+    final isFav = await _firebaseService.isFavorite(widget.meal.idMeal);
+    if (mounted) {
+      setState(() {
+        _isFavorite = isFav;
+      });
+    }
+  }
+
+  Future<void> _toggleFavorite() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Convert MealSummary to Recipe for Firebase
+      final recipe = Recipe(
+        id: widget.meal.idMeal,
+        name: widget.meal.strMeal,
+        description: 'Delicious ${widget.meal.strMeal}',
+        image: widget.meal.strMealThumb,
+        ingredients: [], // You can add ingredients if available
+        instructions: [], // You can add instructions if available
+      );
+
+      await _firebaseService.toggleFavorite(recipe);
+      
+      setState(() {
+        _isFavorite = !_isFavorite;
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              _isFavorite 
+                  ? '❤️ Added to favorites!' 
+                  : 'Removed from favorites',
+            ),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap,
+      onTap: widget.onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
         decoration: BoxDecoration(
@@ -42,7 +122,7 @@ class MealGridItem extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     CachedNetworkImage(
-                      imageUrl: meal.strMealThumb,
+                      imageUrl: widget.meal.strMealThumb,
                       fit: BoxFit.cover,
                       placeholder: (context, url) => Container(
                         color: Colors.teal.shade50,
@@ -62,6 +142,53 @@ class MealGridItem extends StatelessWidget {
                         ),
                       ),
                     ),
+                    // Favorite button overlay
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _isLoading
+                          ? Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: _toggleFavorite,
+                                borderRadius: BorderRadius.circular(18),
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                  child: Icon(
+                                    _isFavorite
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: _isFavorite 
+                                        ? Colors.red 
+                                        : Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                    ),
                   ],
                 ),
               ),
@@ -78,7 +205,7 @@ class MealGridItem extends StatelessWidget {
                 ),
                 child: Center(
                   child: Text(
-                    meal.strMeal,
+                    widget.meal.strMeal,
                     textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

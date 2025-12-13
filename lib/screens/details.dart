@@ -8,9 +8,9 @@ class DetailsScreen extends StatefulWidget {
   final String mealId;
 
   const DetailsScreen({
-    Key? key,
+    super.key,
     required this.mealId,
-  }) : super(key: key);
+  });
 
   @override
   State<DetailsScreen> createState() => _DetailsScreenState();

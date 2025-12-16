@@ -31,3 +31,4 @@ A Flutter recipe application with Firebase integration for favorites, authentica
 ```bash
    flutter run -d chromes
 ```
+---
